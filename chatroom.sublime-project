@@ -1,0 +1,15 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"chatroom.sublime-project"
+			],
+			"path": "."
+		},
+		{
+			"path": "/Users/parveensuhag/Jarvis/Workstation/geekfunnel"
+		}
+	]
+}
