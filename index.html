@@ -4,6 +4,7 @@
 
 </head>
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
   var socket = io('http://localhost:8000');
   socket.on('count', function (data) {
@@ -14,6 +15,33 @@
   });
 </script>
 <body>
-  <div id="connection"></div>
+  <div>
+    <p>Current users in chatroom: <span id="connection"></span></p>
+  </div>
+  <div>
+    <div id="message-box"></div>
+    <form id="message-form">
+      <label>Enter Message : </label>
+      <textarea id="message"></textarea>
+      <input type="submit" name="submitbtn">
+    </form>
+  </div>
+
+
+
+
+  <script>
+  // submit message to server
+    $('#message-form').submit(function(e) {
+      e.preventDefault();
+      socket.emit('send message', $('#message').val());
+      $('#message').val('');
+    });
+
+  // handle incoming message
+    socket.on('new message', function(data) {
+      $('#message-box').append('<p>' + data.msg + '</p>');
+    });
+  </script>
 </body>
 </html>

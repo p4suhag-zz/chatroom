@@ -26,15 +26,22 @@ server.register(require('inert'), function(err) {
 var count = 0;
 
 io.on('connection', function(socket) {
+    // initial number of users
     socket.emit('connected', { 'visit': count});
+    // show connected users
     socket.on('incr', function(data) {
         count++;
-        // broadcast to add sockets
+        // broadcast to all sockets
         io.sockets.emit('count', { 'visit': count });
     });
+    // disconnect
     socket.on('disconnect', function() {
         count--;
         io.sockets.emit('count', { 'visit': count });
+    });
+    // send message to all users
+    socket.on('send message', function(data) {
+        io.sockets.emit('new message', { msg: data });
     });
 });
 
