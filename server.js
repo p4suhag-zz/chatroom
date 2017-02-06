@@ -1,6 +1,7 @@
 var Hapi = require('hapi');
 var server = new Hapi.Server();
-
+var users = [];
+var currentuser = '';
 server.connection({ port: 8000 });
 
 var io = require('socket.io')(server.listener);
@@ -50,7 +51,9 @@ server.register([
                 if (!request.auth.isAuthenticated) {
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
-                console.log(request.auth.credentials.profile.displayName);
+                var username = request.auth.credentials.profile.displayName;
+                users.push(username);
+                currentuser = username;
                 reply.redirect('/chatroom');
             }
         }
@@ -84,6 +87,8 @@ var count = 0;
 io.on('connection', function(socket) {
     // initial number of users
     socket.emit('connected', { 'visit': count});
+    // set current user display name
+    socket.username = currentuser;
     // show connected users
     socket.on('incr', function(data) {
         count++;
@@ -93,11 +98,12 @@ io.on('connection', function(socket) {
     // disconnect
     socket.on('disconnect', function() {
         count--;
+        users.splice(users.indexOf(socket.username), 1);
         io.sockets.emit('count', { 'visit': count });
     });
     // send message to all users
     socket.on('send message', function(data) {
-        io.sockets.emit('new message', { msg: data });
+        io.sockets.emit('new message', { msg: data, user: socket.username });
     });
 });
 

@@ -41,7 +41,7 @@
 
   // handle incoming message
     socket.on('new message', function(data) {
-      $('#message-box').append('<p>' + data.msg + '</p>');
+      $('#message-box').append('<p><span>' + data.user + ' : </span>' + data.msg + '</p>');
     });
   </script>
 </body>
