@@ -16,19 +16,21 @@ server.register([
         throw err;
     }
 
+    server.auth.strategy('twitter', 'bell', {
+        provider: 'twitter',
+        password: 'cookie_encryption_password_secure',
+        isSecure: false,
+        // Make sure to set a "Callback URL" and
+        // check the "Allow this application to be used to Sign in with Twitter"
+        // on the "Settings" tab in your Twitter application
+        clientId: 'iA29pBCVRuG2WNzmBfBf13LRi',                               // Set client id
+        clientSecret: 'HHomgTdWF2JsYIrMjoJqK2awpP7LdD7w66DwBPbRxcGtTOdLRG'                            // Set client secret
+    });
 
     server.auth.strategy('google', 'bell', {
         provider: 'google',
         password: 'cookie_encryption_password_secure',
         isSecure: false,
-        // You'll need to go to https://console.developers.google.com and set up an application to get started
-        // Once you create your app, fill out "APIs & auth >> Consent screen" and make sure to set the email field
-        // Next, go to "APIs & auth >> Credentials and Create new Client ID
-        // Select "web application" and set "AUTHORIZED JAVASCRIPT ORIGINS" and "AUTHORIZED REDIRECT URIS"
-        // This will net you the clientId and the clientSecret needed.
-        // Also be sure to pass the location as well. It must be in the list of "AUTHORIZED REDIRECT URIS"
-        // You must also enable the Google+ API in your profile.
-        // Go to APIs & Auth, then APIs and under Social APIs click Google+ API and enable it.
         clientId: '916665654977-947nfl0qkeg47qr3qb5up2jvltjjv7gv.apps.googleusercontent.com',
         clientSecret: 'hL127SompfZIiYz_24HRL7Uz',
         location: server.info.uri
@@ -40,7 +42,7 @@ server.register([
         path: '/',
         config: {
             auth: {
-                strategy: 'google',
+                strategy: 'twitter',
                 mode: 'try'
             },
             handler: function (request, reply) {
@@ -48,6 +50,7 @@ server.register([
                 if (!request.auth.isAuthenticated) {
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
+                console.log(request.auth.credentials.profile.displayName);
                 reply.redirect('/chatroom');
             }
         }
@@ -58,7 +61,7 @@ server.register([
         path: '/chatroom',
         config: {
             auth: {
-                strategy: 'google',
+                strategy: 'twitter',
                 mode: 'try'
             },
             handler: function (request, reply) {
