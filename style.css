@@ -9,7 +9,7 @@ body {
     padding: 0;
     height: 100%;
     width: 100%;
-    background-color: white;
+    background-color: #F7F1E5;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
 }
@@ -21,7 +21,6 @@ body {
     -webkit-font-smoothing: antialiased;
     font-smoothing: antialiased;
 }
-
 
 a {
     color: red;
@@ -35,35 +34,72 @@ a {
 
 .left__box {
     width: 30%;
+    padding-right: 8%;
 }
-.users__list {
-    padding: 10px;
+
+.list__item {
+    padding: 16px 12px;
+    background-color: white;
+    margin-bottom: 4px;
 }
+.user__name__list {
+    padding: 6px;
+}
+
 .right__box {
     width: 70%;
     padding: 0 15px;
 }
+
 .message-box {
-    height: 90%
+    height: 90%;
+    padding: 10px;
 }
+
+img {
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+li {
+    list-style: none;
+    display: flex;
+}
+
+.message__list {
+    margin-bottom: 25px;
+}
+.message__text {
+    position: relative;
+    top: 6px;
+    width: 250px;
+    padding: 6px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.2);
+}
+
 form {
     height: 10%;
     display: flex;
 }
+
+textarea,
+button {
+    max-height: 60px;
+    font-size: 1.2em;
+    border-radius: 2px;
+    box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.2);
+    background-color: white;
+}
+
 textarea {
     width: 90%;
     padding: 10px;
-    font-size: 1.2em;
 }
+
 button {
     padding: 6px 8px;
     height: 100%;
-    font-size: 1.2em;
 }
-
-
-
-
-
-
-

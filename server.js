@@ -103,6 +103,7 @@ io.on('connection', function(socket) {
     socket.on('incr', function(data) {
         count++;
         // broadcast to all sockets
+        io.sockets.emit('list users', { 'users': users });
         io.sockets.emit('count', { 'visit': count });
     });
     // disconnect
@@ -114,7 +115,7 @@ io.on('connection', function(socket) {
     });
     // send message to all users
     socket.on('send message', function(data) {
-        io.sockets.emit('new message', { msg: data, user: socket.username });
+        io.sockets.emit('new message', { msg: data, userimage: users[socket.username] });
     });
 });
 
