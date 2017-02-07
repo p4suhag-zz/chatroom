@@ -1,48 +1,65 @@
 <!DOCTYPE html>
 <html>
-<head>
 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="cleartype" content="on" />
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
+    <title>Chatroom</title>
+    <link rel="stylesheet" media="all" href="/style.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
 </head>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
-  var socket = io('http://localhost:8000');
-  socket.on('count', function (data) {
+var socket = io('http://localhost:8000');
+socket.on('count', function(data) {
     document.getElementById('connection').innerHTML = data.visit;
-  });
-  socket.on('connected', function (data) {
+});
+socket.on('connected', function(data) {
     socket.emit('incr');
-  });
+});
+socket.on('list users', function(data) {
+    var userslist = '';
+    for (var name in data.users) {
+      userslist += '<li>' + name + '</li>';
+        $('#users__list').html(userslist);
+    }
+});
 </script>
+
 <body>
-  
-  <div>
-    <p>Current users in chatroom: <span id="connection"></span></p>
-  </div>
-  <div>
-    <div id="message-box"></div>
-    <form id="message-form">
-      <label>Enter Message : </label>
-      <textarea id="message"></textarea>
-      <input type="submit" name="submitbtn">
-    </form>
-  </div>
-
-
-
-
-  <script>
-  // submit message to server
+    <div class="container">
+        <div class="left__box">
+          <p>Online: <span id="connection"></span></p>
+          <ul class="users__list" id="users__list">
+          </ul>
+        </div>
+        <div class="right__box">
+            <div class="message-box" id="message-box"></div>
+            <form id="message-form">
+                <textarea id="message"></textarea>
+                <div>
+                    <button type="submit" name="submitbtn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+    // submit message to server
     $('#message-form').submit(function(e) {
-      e.preventDefault();
-      socket.emit('send message', $('#message').val());
-      $('#message').val('');
+        e.preventDefault();
+        socket.emit('send message', $('#message').val());
+        $('#message').val('');
     });
 
-  // handle incoming message
+    // handle incoming message
     socket.on('new message', function(data) {
-      $('#message-box').append('<p><span>' + data.user + ' : </span>' + data.msg + '</p>');
+        $('#message-box').append('<p><span>' + data.user + ' : </span>' + data.msg + '</p>');
     });
-  </script>
+    </script>
 </body>
+
 </html>

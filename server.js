@@ -1,6 +1,6 @@
 var Hapi = require('hapi');
 var server = new Hapi.Server();
-var users = [];
+var users = {};
 var currentuser = '';
 server.connection({ port: 8000 });
 
@@ -37,6 +37,14 @@ server.register([
         location: server.info.uri
     });
 
+    // serve assets
+    server.route({
+        method: 'GET',
+        path: '/{path*}',
+        handler: {
+            file: 'style.css'
+        }
+    });
 
     server.route({
         method: 'GET',
@@ -52,7 +60,7 @@ server.register([
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
                 var username = request.auth.credentials.profile.displayName;
-                users.push(username);
+                users[username] = request.auth.credentials.profile.raw.profile_image_url;
                 currentuser = username;
                 reply.redirect('/chatroom');
             }
@@ -87,6 +95,8 @@ var count = 0;
 io.on('connection', function(socket) {
     // initial number of users
     socket.emit('connected', { 'visit': count});
+    // list users info
+    socket.emit('list users', { 'users': users });
     // set current user display name
     socket.username = currentuser;
     // show connected users
@@ -98,8 +108,9 @@ io.on('connection', function(socket) {
     // disconnect
     socket.on('disconnect', function() {
         count--;
-        users.splice(users.indexOf(socket.username), 1);
+        delete users[socket.username];
         io.sockets.emit('count', { 'visit': count });
+        io.sockets.emit('list users', { 'users': users });
     });
     // send message to all users
     socket.on('send message', function(data) {

@@ -1,0 +1,69 @@
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    font-smoothing: antialiased;
+}
+
+
+a {
+    color: red;
+    text-decoration: none;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+}
+
+.left__box {
+    width: 30%;
+}
+.users__list {
+    padding: 10px;
+}
+.right__box {
+    width: 70%;
+    padding: 0 15px;
+}
+.message-box {
+    height: 90%
+}
+form {
+    height: 10%;
+    display: flex;
+}
+textarea {
+    width: 90%;
+    padding: 10px;
+    font-size: 1.2em;
+}
+button {
+    padding: 6px 8px;
+    height: 100%;
+    font-size: 1.2em;
+}
+
+
+
+
+
+
+
