@@ -1,5 +1,6 @@
 var Hapi = require('hapi');
 var server = new Hapi.Server();
+var Msg = require('./models/rooms.js');
 var users = {};
 var currentuser = '';
 server.connection({ port: 8000 });
@@ -45,6 +46,18 @@ server.register([
             file: 'style.css'
         }
     });
+    server.route({  
+      method: 'GET',
+      path: '/assets/{file*}',
+      config: {
+          auth: false
+      },
+      handler: {
+        directory: { 
+          path: 'assets'
+        }
+      }
+    })
 
     server.route({
         method: 'GET',
@@ -116,6 +129,19 @@ io.on('connection', function(socket) {
     // send message to all users
     socket.on('send message', function(data) {
         io.sockets.emit('new message', { msg: data, userimage: users[socket.username] });
+        // create new message
+        var newMsg = new Msg({
+            room: 'chat',
+            user: socket.username,
+            message: data,
+            image: users[socket.username]
+        });
+        // save the new message
+        newMsg.save(function(err) {
+          if (err) throw err;
+
+          console.log('User saved successfully!');
+        });
     });
 });
 
