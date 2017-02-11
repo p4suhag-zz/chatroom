@@ -7,28 +7,26 @@
     <meta name="apple-mobile-web-app-capable" content="no">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
     <title>Chatroom</title>
-    <link rel="stylesheet" media="all" href="/style.css">
+    <link rel="stylesheet" media="all" href="assets/style.css">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
 </head>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script>
-var socket = io('http://localhost:8000');
+var socket = io('/');
+socket.emit('join room', window.location.pathname.replace('/', ''));
 socket.on('count', function(data) {
+    console.log(data.visit);
     document.getElementById('connection').innerHTML = data.visit;
 });
-socket.on('connected', function(data) {
-    socket.emit('incr');
-});
-socket.on('list users', function(data) {
-    var userslist = '';
-    for (var name in data.users) {
-      userslist += '<li class="list__item"><img src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
-      $('#users__list').html(userslist);
-    }
-    
-});
+// socket.on('list users', function(data) {
+//     var userslist = '';
+//     for (var name in data.users) {
+//       userslist += '<li class="list__item"><img src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
+//       $('#users__list').html(userslist);
+//     }    
+// });
 </script>
 
 <body>
@@ -48,19 +46,7 @@ socket.on('list users', function(data) {
             </form>
         </div>
     </div>
-    <script>
-    // submit message to server
-    $('#message-form').submit(function(e) {
-        e.preventDefault();
-        socket.emit('send message', $('#message').val());
-        $('#message').val('');
-    });
-
-    // handle incoming message
-    socket.on('new message', function(data) {
-        $('#message-box').append('<li class="message__list"><img src="' + data.userimage + '">' + '<p class="message__text">' + data.msg + '</p></li>');
-    });
-    </script>
+    <script src="/assets/client.js"></script>
 </body>
 
 </html>

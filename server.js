@@ -3,6 +3,7 @@ var server = new Hapi.Server();
 var Msg = require('./models/rooms.js');
 var users = {};
 var currentuser = '';
+var currentRoom = '';
 server.connection({ port: 8000 });
 
 var io = require('socket.io')(server.listener);
@@ -39,13 +40,6 @@ server.register([
     });
 
     // serve assets
-    server.route({
-        method: 'GET',
-        path: '/{path*}',
-        handler: {
-            file: 'style.css'
-        }
-    });
     server.route({  
       method: 'GET',
       path: '/assets/{file*}',
@@ -63,18 +57,18 @@ server.register([
         method: 'GET',
         path: '/',
         config: {
-            auth: {
-                strategy: 'twitter',
-                mode: 'try'
-            },
+            // auth: {
+            //     strategy: 'twitter',
+            //     mode: 'try'
+            // },
             handler: function (request, reply) {
 
-                if (!request.auth.isAuthenticated) {
-                    return reply('Authentication failed due to: ' + request.auth.error.message);
-                }
-                var username = request.auth.credentials.profile.displayName;
-                users[username] = request.auth.credentials.profile.raw.profile_image_url;
-                currentuser = username;
+                // if (!request.auth.isAuthenticated) {
+                //     return reply('Authentication failed due to: ' + request.auth.error.message);
+                // }
+                // var username = request.auth.credentials.profile.displayName;
+                // users[username] = request.auth.credentials.profile.raw.profile_image_url;
+                // currentuser = username;
                 reply.redirect('/chatroom');
             }
         }
@@ -82,17 +76,17 @@ server.register([
 
     server.route({
         method: 'GET',
-        path: '/chatroom',
+        path: '/{chatroom}',
         config: {
-            auth: {
-                strategy: 'twitter',
-                mode: 'try'
-            },
+            // auth: {
+            //     strategy: 'twitter',
+            //     mode: 'try'
+            // },
             handler: function (request, reply) {
-
-                if (!request.auth.isAuthenticated) {
-                    return reply('Authentication failed due to: ' + request.auth.error.message);
-                }
+                currentRoom = request.path.replace('/', '');
+                // if (!request.auth.isAuthenticated) {
+                //     return reply('Authentication failed due to: ' + request.auth.error.message);
+                // }
                 reply.file('index.html');
             }
         }
@@ -103,46 +97,55 @@ server.register([
     });
 });
 
-var count = 0;
+var count = {};
 
 io.on('connection', function(socket) {
-    // initial number of users
-    socket.emit('connected', { 'visit': count});
-    // list users info
-    socket.emit('list users', { 'users': users });
+    // join room 
+    socket.on('join room', function(data) {
+        console.log(data);
+        // set current requested room
+        socket.roomname = data;
+        this.join(data);
+        if(!count[socket.roomname]){
+            count[socket.roomname] = 0;
+        }
+        count[socket.roomname]++;
+        io.to(socket.roomname).emit('count', { 'visit': count[socket.roomname] });
+    });
     // set current user display name
     socket.username = currentuser;
-    // show connected users
-    socket.on('incr', function(data) {
-        count++;
-        // broadcast to all sockets
-        io.sockets.emit('list users', { 'users': users });
-        io.sockets.emit('count', { 'visit': count });
-    });
+    
+    
+    // initial number of users
+    // socket.emit('connected', { 'visit': count});
+    // io.sockets.in(socket.roomname).emit('connected', socket.roomname);
+    // list users info
+    // socket.emit('list users', { 'users': users });
+    
     // disconnect
     socket.on('disconnect', function() {
-        count--;
+        count[socket.roomname]--;
         delete users[socket.username];
-        io.sockets.emit('count', { 'visit': count });
-        io.sockets.emit('list users', { 'users': users });
+        io.to(socket.roomname).emit('count', { 'visit': count[socket.roomname] });
+        // io.sockets.emit('list users', { 'users': users });
     });
     // send message to all users
-    socket.on('send message', function(data) {
-        io.sockets.emit('new message', { msg: data, userimage: users[socket.username] });
-        // create new message
-        var newMsg = new Msg({
-            room: 'chat',
-            user: socket.username,
-            message: data,
-            image: users[socket.username]
-        });
-        // save the new message
-        newMsg.save(function(err) {
-          if (err) throw err;
+    // socket.on('send message', function(data) {
+    //     io.sockets.emit('new message', { msg: data, userimage: users[socket.username] });
+    //     // create new message
+    //     var newMsg = new Msg({
+    //         room: 'chat',
+    //         user: socket.username,
+    //         message: data,
+    //         image: users[socket.username]
+    //     });
+    //     // save the new message
+    //     newMsg.save(function(err) {
+    //       if (err) throw err;
 
-          console.log('User saved successfully!');
-        });
-    });
+    //       console.log('User saved successfully!');
+    //     });
+    // });
 });
 
 
