@@ -1,6 +1,7 @@
 var Hapi = require('hapi');
 var server = new Hapi.Server();
 var Msg = require('./models/rooms.js');
+var Msgs = require('mongoose').model('Msg');
 var users = {};
 var currentuser = '';
 var currentRoom = '';
@@ -66,9 +67,6 @@ server.register([
                 if (!request.auth.isAuthenticated) {
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
-                // var username = request.auth.credentials.profile.displayName;
-                // users[username] = request.auth.credentials.profile.raw.profile_image_url;
-                // currentuser = username;
                 reply.redirect('/chatroom');
             }
         }
@@ -92,9 +90,6 @@ server.register([
                     users[currentRoom] = {};
                 }
                 users[currentRoom][username] = request.auth.credentials.profile.raw.profile_image_url;
-                console.log(users);
-                // console.log(users[currentRoom]);
-                // users[currentRoom].[username] = request.auth.credentials.profile.raw.profile_image_url;
                 currentuser = username;
                 reply.file('index.html');
             }
@@ -125,6 +120,12 @@ io.on('connection', function(socket) {
         io.to(socket.roomname).emit('count', { 'visit': count[socket.roomname] });
         // list users info
         io.sockets.in(socket.roomname).emit('list users', { 'users': users[socket.roomname] });
+
+        // load previous messages
+        Msgs.find({room: socket.roomname}).exec(function(err, oldmsgs) {
+            socket.emit('old message', oldmsgs);
+        });
+
     });
 
     // delete user logic
@@ -150,18 +151,17 @@ io.on('connection', function(socket) {
     socket.on('send message', function(data) {
         io.sockets.in(socket.roomname).emit('new message', { msg: data, userimage: users[socket.roomname][socket.username] });
         // create new message
-        // var newMsg = new Msg({
-        //     room: socket.roomname,
-        //     user: socket.username,
-        //     message: data,
-        //     image: users[socket.username]
-        // });
-        // // save the new message
-        // newMsg.save(function(err) {
-        //   if (err) throw err;
-
-        //   console.log('User saved successfully!');
-        // });
+        var newMsg = new Msg({
+            room: socket.roomname,
+            user: socket.username,
+            message: data,
+            image: users[socket.roomname][socket.username]
+        });
+        // save the new message
+        newMsg.save(function(err) {
+          if (err) throw err;
+          console.log('User saved successfully!');
+        });
     });
 });
 
