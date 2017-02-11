@@ -17,7 +17,6 @@
 var socket = io('/');
 socket.emit('join room', window.location.pathname.replace('/', ''));
 socket.on('count', function(data) {
-    console.log(data.visit);
     document.getElementById('connection').innerHTML = data.visit;
 });
 socket.on('list users', function(data) {

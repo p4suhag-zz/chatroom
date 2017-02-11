@@ -66,9 +66,9 @@ server.register([
                 if (!request.auth.isAuthenticated) {
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
-                var username = request.auth.credentials.profile.displayName;
-                users[username] = request.auth.credentials.profile.raw.profile_image_url;
-                currentuser = username;
+                // var username = request.auth.credentials.profile.displayName;
+                // users[username] = request.auth.credentials.profile.raw.profile_image_url;
+                // currentuser = username;
                 reply.redirect('/chatroom');
             }
         }
@@ -87,6 +87,15 @@ server.register([
                 if (!request.auth.isAuthenticated) {
                     return reply('Authentication failed due to: ' + request.auth.error.message);
                 }
+                var username = '' + request.auth.credentials.profile.displayName + ' ';
+                if(!users[currentRoom]) {
+                    users[currentRoom] = {};
+                }
+                users[currentRoom][username] = request.auth.credentials.profile.raw.profile_image_url;
+                console.log(users);
+                // console.log(users[currentRoom]);
+                // users[currentRoom].[username] = request.auth.credentials.profile.raw.profile_image_url;
+                currentuser = username;
                 reply.file('index.html');
             }
         }
@@ -105,7 +114,7 @@ io.on('connection', function(socket) {
 
     // join room 
     socket.on('join room', function(data) {
-        console.log(data);
+        
         // set current requested room
         socket.roomname = data;
         this.join(data);
@@ -115,33 +124,44 @@ io.on('connection', function(socket) {
         count[socket.roomname]++;
         io.to(socket.roomname).emit('count', { 'visit': count[socket.roomname] });
         // list users info
-        io.sockets.in(socket.roomname).emit('list users', { 'users': users });
+        io.sockets.in(socket.roomname).emit('list users', { 'users': users[socket.roomname] });
     });
-      
+
+    // delete user logic
+    function filterObject(obj, key) {
+        for (var i in obj) {
+            if (i == key) {
+                delete obj[key];
+            }
+        }
+        return obj;
+    }
     // disconnect
     socket.on('disconnect', function() {
         count[socket.roomname]--;
-        delete users[socket.username];
+        
+        users[socket.roomname] = filterObject(users[socket.roomname], socket.username);
+
         io.to(socket.roomname).emit('count', { 'visit': count[socket.roomname] });
-        io.to(socket.roomname).emit('list users', { 'users': users });
+        io.to(socket.roomname).emit('list users', { 'users': users[socket.roomname] });
     });
-    
+
     // send message to all users
     socket.on('send message', function(data) {
-        io.sockets.in(socket.roomname).emit('new message', { msg: data, userimage: users[socket.username] });
+        io.sockets.in(socket.roomname).emit('new message', { msg: data, userimage: users[socket.roomname][socket.username] });
         // create new message
-        var newMsg = new Msg({
-            room: socket.roomname,
-            user: socket.username,
-            message: data,
-            image: users[socket.username]
-        });
-        // save the new message
-        newMsg.save(function(err) {
-          if (err) throw err;
+        // var newMsg = new Msg({
+        //     room: socket.roomname,
+        //     user: socket.username,
+        //     message: data,
+        //     image: users[socket.username]
+        // });
+        // // save the new message
+        // newMsg.save(function(err) {
+        //   if (err) throw err;
 
-          console.log('User saved successfully!');
-        });
+        //   console.log('User saved successfully!');
+        // });
     });
 });
 
