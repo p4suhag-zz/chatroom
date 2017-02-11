@@ -20,13 +20,13 @@ socket.on('count', function(data) {
     console.log(data.visit);
     document.getElementById('connection').innerHTML = data.visit;
 });
-// socket.on('list users', function(data) {
-//     var userslist = '';
-//     for (var name in data.users) {
-//       userslist += '<li class="list__item"><img src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
-//       $('#users__list').html(userslist);
-//     }    
-// });
+socket.on('list users', function(data) {
+    var userslist = '';
+    for (var name in data.users) {
+      userslist += '<li class="list__item"><img src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
+      $('#users__list').html(userslist);
+    }    
+});
 </script>
 
 <body>
