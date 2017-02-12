@@ -24,6 +24,7 @@ server.register([
         provider: 'twitter',
         password: 'cookie_encryption_password_secure',
         isSecure: false,
+        location: server.info.uri,
         // Make sure to set a "Callback URL" and
         // check the "Allow this application to be used to Sign in with Twitter"
         // on the "Settings" tab in your Twitter application
