@@ -22,5 +22,8 @@
     "inert": "^4.1.0",
     "mongoose": "^4.8.1",
     "socket.io": "^1.7.2"
+  },
+  "engines": {
+    "node": "6.6.0"
   }
 }
