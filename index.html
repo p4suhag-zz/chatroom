@@ -7,6 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="no">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
     <title>Chatroom</title>
+    <link rel="icon" href="assets/favicon.png" >
     <link rel="stylesheet" media="all" href="assets/style.css">
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
@@ -22,25 +23,28 @@ socket.on('count', function(data) {
 socket.on('list users', function(data) {
     var userslist = '';
     for (var name in data.users) {
-      userslist += '<li class="list__item"><img src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
+      userslist += '<li class="list__item"><img class="list__img" src="' + data.users[name] + '"><p class="user__name__list">' + name + '</p></li>';
       $('#users__list').html(userslist);
     }    
 });
+// url modify
+var newUrl = window.location.origin + window.location.pathname;
+history.pushState({}, null, newUrl);
 </script>
 
 <body>
     <div class="container">
         <div class="left__box">
-          <p class="list__item">Active Users : <span id="connection"></span></p>
+          <p class="list__item">Active Users  <span class="active__no" id="connection"></span></p>
           <ul class="users__list" id="users__list">
           </ul>
         </div>
         <div class="right__box">
             <div class="message-box" id="message-box"></div>
             <form id="message-form">
-                <textarea id="message"></textarea>
+                <textarea id="message" placeholder="type something ....."></textarea>
                 <div>
-                    <button type="submit" name="submitbtn">Submit</button>
+                    <button type="submit" name="submitbtn"><img class="send__img" src="/assets/send.svg"></button>
                 </div>
             </form>
         </div>
