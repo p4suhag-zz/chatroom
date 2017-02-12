@@ -2,7 +2,7 @@
 
 var mongoose = require('mongoose');
 // mongoose.connect('mongodb://localhost/chatroom');
-mongoose.connect('mongodb://baatuni:baatuni@ds149049.mlab.com:49049/baatuni');
+mongoose.connect(process.env.MONGOLAB_URI);
 var Schema = mongoose.Schema;
 
 var msgSchema = new Schema({
