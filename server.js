@@ -5,7 +5,7 @@ var Msgs = require('mongoose').model('Msg');
 var users = {};
 var currentuser = '';
 var currentRoom = '';
-server.connection({ port: 80 });
+server.connection({ port: process.env.PORT || 5000 });
 
 var io = require('socket.io')(server.listener);
 

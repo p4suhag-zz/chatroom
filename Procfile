@@ -1,1 +1,1 @@
-web: node server.js thin start -p $PORT
+web: node server.js
