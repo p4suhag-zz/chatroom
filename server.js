@@ -5,7 +5,7 @@ var Msgs = require('mongoose').model('Msg');
 var users = {};
 var currentuser = '';
 var currentRoom = '';
-server.connection({ port: process.env.PORT || 5000 });
+server.connection({ port: 5000, host: 'https://baatuni.herokuapp.com/' });
 
 var io = require('socket.io')(server.listener);
 
