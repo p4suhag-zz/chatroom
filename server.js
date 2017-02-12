@@ -20,26 +20,22 @@ server.register([
         throw err;
     }
 
+    // server.auth.strategy('twitter', 'bell', {
+    //     provider: 'twitter',
+    //     password: 'cookie_encryption_password_secure',
+    //     isSecure: false,
+    //     clientId: 'iA29pBCVRuG2WNzmBfBf13LRi',                               // Set client id
+    //     clientSecret: 'HHomgTdWF2JsYIrMjoJqK2awpP7LdD7w66DwBPbRxcGtTOdLRG'                            // Set client secret
+    // });
+    // for production heroku
     server.auth.strategy('twitter', 'bell', {
         provider: 'twitter',
         password: 'cookie_encryption_password_secure',
         isSecure: false,
-        location: server.info.uri,
-        // Make sure to set a "Callback URL" and
-        // check the "Allow this application to be used to Sign in with Twitter"
-        // on the "Settings" tab in your Twitter application
-        clientId: 'iA29pBCVRuG2WNzmBfBf13LRi',                               // Set client id
-        clientSecret: 'HHomgTdWF2JsYIrMjoJqK2awpP7LdD7w66DwBPbRxcGtTOdLRG'                            // Set client secret
+        clientId: '63PaQSPJflWzLAp1zpC1WHnEZ',                               // Set client id
+        clientSecret: 'XCRWqnqMLBWYU12jC89I1kOxPGELcpiWd6USCovNDNkVUZZtG9'                            // Set client secret
     });
 
-    server.auth.strategy('google', 'bell', {
-        provider: 'google',
-        password: 'cookie_encryption_password_secure',
-        isSecure: false,
-        clientId: '916665654977-947nfl0qkeg47qr3qb5up2jvltjjv7gv.apps.googleusercontent.com',
-        clientSecret: 'hL127SompfZIiYz_24HRL7Uz',
-        location: server.info.uri
-    });
 
     // serve assets
     server.route({  
